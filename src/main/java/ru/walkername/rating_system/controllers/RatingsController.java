@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ratings")
+@CrossOrigin
 public class RatingsController {
 
     private final RatingsService ratingsService;
