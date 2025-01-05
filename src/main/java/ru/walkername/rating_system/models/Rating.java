@@ -1,6 +1,8 @@
 package ru.walkername.rating_system.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 @Entity
 @Table(name = "rating", uniqueConstraints = {
@@ -19,6 +21,8 @@ public class Rating {
     @Column(name = "movie_id")
     private int movieId;
 
+    @Min(value = 0, message = "Rating should be greater than 0")
+    @Max(value = 10, message = "Rating should be less than 10")
     @Column(name = "rating")
     private double rating;
 
