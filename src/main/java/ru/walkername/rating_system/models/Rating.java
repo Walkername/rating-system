@@ -67,4 +67,14 @@ public class Rating {
     public void setRating(double rating) {
         this.rating = rating;
     }
+
+    @Override
+    public String toString() {
+        return "Rating{" +
+                "ratingId=" + ratingId +
+                ", userId=" + userId +
+                ", movieId=" + movieId +
+                ", rating=" + rating +
+                '}';
+    }
 }
