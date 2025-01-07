@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import ru.walkername.rating_system.dto.RatingDTO;
+import ru.walkername.rating_system.dto.RatingsResponse;
 import ru.walkername.rating_system.models.Rating;
 import ru.walkername.rating_system.services.RatingsService;
 import ru.walkername.rating_system.utils.RatingErrorResponse;
@@ -66,28 +67,25 @@ public class RatingsController {
     }
 
     @GetMapping("/{userId}/{movieId}")
-    public RatingDTO getRating(
+    public Rating getRating(
             @PathVariable("userId") int userId,
             @PathVariable("movieId") int movieId
     ) {
-        Rating rating = ratingsService.findOne(userId, movieId);
-        return convertToRatingDTO(rating);
+        return ratingsService.findOne(userId, movieId);
     }
 
     @GetMapping("/user/{id}")
-    public List<RatingDTO> getRatingsByUser(
+    public RatingsResponse getRatingsByUser(
             @PathVariable("id") int id
     ) {
-        List<Rating> ratings = ratingsService.getRatingsByUser(id);
-        return ratings.stream().map(this::convertToRatingDTO).toList();
+        return new RatingsResponse(ratingsService.getRatingsByUser(id));
     }
 
     @GetMapping("/movie/{id}")
-    public List<RatingDTO> getRatingsByMovie(
+    public RatingsResponse getRatingsByMovie(
             @PathVariable("id") int id
     ) {
-        List<Rating> ratings = ratingsService.getRatingsByUser(id);
-        return ratings.stream().map(this::convertToRatingDTO).toList();
+        return new RatingsResponse(ratingsService.getRatingsByUser(id));
     }
 
     @ExceptionHandler
