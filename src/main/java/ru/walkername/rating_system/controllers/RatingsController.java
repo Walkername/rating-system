@@ -85,7 +85,7 @@ public class RatingsController {
     public RatingsResponse getRatingsByMovie(
             @PathVariable("id") int id
     ) {
-        return new RatingsResponse(ratingsService.getRatingsByUser(id));
+        return new RatingsResponse(ratingsService.getRatingsByMovie(id));
     }
 
     @ExceptionHandler
