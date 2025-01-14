@@ -10,6 +10,7 @@ import ru.walkername.rating_system.models.Rating;
 import ru.walkername.rating_system.repositories.RatingsRepository;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,17 +19,19 @@ import java.util.Optional;
 public class RatingsService {
 
     private final RatingsRepository ratingsRepository;
-
     private final String MOVIE_SERVICE_API;
+    private final String USER_SERVICE_API;
     private final RestTemplate restTemplate;
 
     @Autowired
     public RatingsService(
             RatingsRepository ratingsRepository,
             @Value("${movie.service.url}") String MOVIE_SERVICE_API,
+            @Value("${user.service.url") String USER_SERVICE_API,
             RestTemplate restTemplate) {
         this.ratingsRepository = ratingsRepository;
         this.MOVIE_SERVICE_API = MOVIE_SERVICE_API;
+        this.USER_SERVICE_API = USER_SERVICE_API;
         this.restTemplate = restTemplate;
     }
 
@@ -40,11 +43,14 @@ public class RatingsService {
     @Transactional
     public void save(Rating rating) {
         try {
-            String url = MOVIE_SERVICE_API + "/movies/update-avg-rating/" + rating.getMovieId();
-            System.out.println(url);
-            URI uri = new URI(url);
             NewRatingDTO newRatingDTO = new NewRatingDTO(rating.getRating(), 0.0, false);
-            restTemplate.patchForObject(uri, newRatingDTO, String.class);
+
+            // Send to User and Movie Services
+            // TODO: do it with message broker, just send to Movie and User services and don't wait
+            String urlToMovie = MOVIE_SERVICE_API + "/movies/update-avg-rating/" + rating.getMovieId();
+            String urlToUser = USER_SERVICE_API + "/users/update-avg-rating/" + rating.getUserId();
+            sendTo(urlToMovie, newRatingDTO);
+            sendTo(urlToUser, newRatingDTO);
 
             // Save to db new added rating
             ratingsRepository.save(rating);
@@ -58,10 +64,14 @@ public class RatingsService {
         Optional<Rating> oldRating = ratingsRepository.findById(id);
         oldRating.ifPresent(value -> {
             try {
-                String url = MOVIE_SERVICE_API + "/movies/update-avg-rating/" + value.getMovieId();
-                URI uri = new URI(url);
                 NewRatingDTO newRatingDTO = new NewRatingDTO(updatedRating.getRating(), value.getRating(), true);
-                restTemplate.patchForObject(uri, newRatingDTO, String.class);
+
+                // Send to User and Movie Services
+                // TODO: do it with message broker, just send to Movie and User services and don't wait
+                String urlToMovie = MOVIE_SERVICE_API + "/movies/update-avg-rating/" + value.getMovieId();
+                String urlToUser = USER_SERVICE_API + "/users/update-avg-rating/" + value.getUserId();
+                sendTo(urlToMovie, newRatingDTO);
+                sendTo(urlToUser, newRatingDTO);
 
                 // Save to DB updated rating
                 updatedRating.setRatingId(id);
@@ -83,6 +93,11 @@ public class RatingsService {
 
     public List<Rating> getRatingsByMovie(int id) {
         return ratingsRepository.findByMovieId(id);
+    }
+
+    private void sendTo(String url, NewRatingDTO newRatingDTO) throws URISyntaxException {
+        URI uri = new URI(url);
+        restTemplate.patchForObject(uri, newRatingDTO, String.class);
     }
 
 }

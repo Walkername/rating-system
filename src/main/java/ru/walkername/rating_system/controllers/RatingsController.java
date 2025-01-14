@@ -13,7 +13,7 @@ import ru.walkername.rating_system.dto.RatingsResponse;
 import ru.walkername.rating_system.models.Rating;
 import ru.walkername.rating_system.services.RatingsService;
 import ru.walkername.rating_system.utils.RatingErrorResponse;
-import ru.walkername.rating_system.utils.RatingNotCreatedException;
+import ru.walkername.rating_system.utils.RatingWrongValidationException;
 import ru.walkername.rating_system.utils.RatingValidator;
 
 import java.util.List;
@@ -89,7 +89,7 @@ public class RatingsController {
     }
 
     @ExceptionHandler
-    public ResponseEntity<RatingErrorResponse> handleException(RatingNotCreatedException ex) {
+    public ResponseEntity<RatingErrorResponse> handleException(RatingWrongValidationException ex) {
         RatingErrorResponse response = new RatingErrorResponse(
                 ex.getMessage(),
                 System.currentTimeMillis()
@@ -111,7 +111,7 @@ public class RatingsController {
                         .append(";");
             }
 
-            throw new RatingNotCreatedException(strError.toString());
+            throw new RatingWrongValidationException(strError.toString());
         }
     }
 
