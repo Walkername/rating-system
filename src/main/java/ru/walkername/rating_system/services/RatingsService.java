@@ -27,7 +27,7 @@ public class RatingsService {
     public RatingsService(
             RatingsRepository ratingsRepository,
             @Value("${movie.service.url}") String MOVIE_SERVICE_API,
-            @Value("${user.service.url") String USER_SERVICE_API,
+            @Value("${user.service.url}") String USER_SERVICE_API,
             RestTemplate restTemplate) {
         this.ratingsRepository = ratingsRepository;
         this.MOVIE_SERVICE_API = MOVIE_SERVICE_API;
