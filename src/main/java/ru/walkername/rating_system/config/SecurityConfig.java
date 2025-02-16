@@ -30,9 +30,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/movies/delete/{id}", "/movies/add", "/movies/edit/{id}").hasAuthority("ADMIN")
                         .requestMatchers(
-                                "/auth/login", "/auth/register", "/movies", "/movies/{id}"
+                                "/ratings/{userId}/{movieId}", "/ratings/user/{id}", "/ratings/movie/{movieId}"
                         ).permitAll()
                         .anyRequest().hasAnyAuthority("USER", "ADMIN")
                 )
