@@ -2,6 +2,8 @@ package ru.walkername.rating_system.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -11,6 +13,7 @@ import ru.walkername.rating_system.repositories.RatingsRepository;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +56,7 @@ public class RatingsService {
             sendTo(urlToUser, newRatingDTO);
 
             // Save to db new added rating
+            rating.setDate(new Date());
             ratingsRepository.save(rating);
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,6 +79,7 @@ public class RatingsService {
 
                 // Save to DB updated rating
                 updatedRating.setRatingId(id);
+                updatedRating.setDate(new Date());
                 ratingsRepository.save(updatedRating);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -87,8 +92,11 @@ public class RatingsService {
         ratingsRepository.deleteById(id);
     }
 
-    public List<Rating> getRatingsByUser(int id) {
-        return ratingsRepository.findByUserId(id);
+    public List<Rating> getRatingsByUser(int id, int page, int moviesPerPage, boolean byDate) {
+        Sort sort = byDate
+                ? Sort.by("date").descending()
+                : Sort.by("date").ascending();
+        return ratingsRepository.findAllByUserId(id, PageRequest.of(page, moviesPerPage, sort)).getContent();
     }
 
     public List<Rating> getRatingsByMovie(int id) {

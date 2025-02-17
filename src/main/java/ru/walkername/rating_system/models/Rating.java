@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "rating", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "movie_id"})
@@ -25,6 +27,9 @@ public class Rating {
     @Max(value = 10, message = "Rating should be less than 10")
     @Column(name = "rating")
     private double rating;
+
+    @Column(name = "date")
+    private Date date;
 
     public Rating() {
 
@@ -66,6 +71,14 @@ public class Rating {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Override

@@ -76,9 +76,12 @@ public class RatingsController {
 
     @GetMapping("/user/{id}")
     public RatingsResponse getRatingsByUser(
-            @PathVariable("id") int id
+            @PathVariable("id") int id,
+            @RequestParam(value = "page") Integer page,
+            @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
+            @RequestParam(value = "down", required = false, defaultValue = "true") boolean byDate
     ) {
-        return new RatingsResponse(ratingsService.getRatingsByUser(id));
+        return new RatingsResponse(ratingsService.getRatingsByUser(id, page, limit, byDate));
     }
 
     @GetMapping("/movie/{id}")
